@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Work &amp; Education Timeline</title>
+
+  <!-- Google Fonts — update family names here AND in --font-* tokens in /css/styles.css -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+
+  <!-- All styles live here — no inline CSS in this file -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ── Page header ──────────────────────────────────────────── -->
+  <div class="page-header">
+    <h1>Work &amp; Education History</h1>
+    <p>Please enter details about your work experience and education.</p>
+  </div>
+
+  <!-- ── Add buttons ──────────────────────────────────────────── -->
+  <div class="controls">
+    <button class="btn" onclick="openForm('add','experience')">+ Add Experience</button>
+    <button class="btn" onclick="openForm('add','education')">+ Add Education</button>
+  </div>
+
+  <!-- ── Timeline ─────────────────────────────────────────────── -->
+  <div class="timeline-wrapper">
+    <div class="center-line"></div>
+    <div id="timeline-body"></div>
+  </div>
+
+
+  <!-- ── Detail modal (click a card to open) ──────────────────── -->
+  <div class="overlay" id="detail-overlay">
+    <div class="modal-box">
+      <div class="modal-accent" id="modal-accent"></div>
+      <button class="modal-close" onclick="closeDetail()">&#x2715;</button>
+      <p  class="modal-type"  id="modal-type"></p>
+      <h2 class="modal-title" id="modal-title"></h2>
+      <p  class="modal-org"   id="modal-org"></p>
+      <div class="modal-meta">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="1" y="2" width="11" height="10" rx="1.5"/>
+          <path d="M1 5h11M4 1v2M9 1v2"/>
+        </svg>
+        <span id="modal-dates"></span>
+      </div>
+      <div class="modal-desc" id="modal-desc" style="display:none"></div>
+    </div>
+  </div>
+
+
+  <!-- ── Add / Edit form ──────────────────────────────────────── -->
+  <div class="overlay" id="form-overlay">
+    <div class="form-box">
+      <h3 id="form-heading">Add Entry</h3>
+
+      <input type="hidden" id="form-mode"     value="add">
+      <input type="hidden" id="form-edit-idx" value="-1">
+
+      <div class="form-group">
+        <label>Type</label>
+        <select id="f-type">
+          <option value="experience">Experience</option>
+          <option value="education">Education</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Title / Degree</label>
+        <input type="text" id="f-title" placeholder="e.g. Senior Designer">
+      </div>
+
+      <div class="form-group">
+        <label>Company / Institution</label>
+        <input type="text" id="f-org" placeholder="e.g. Acme Corp">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Start Year</label>
+          <input type="number" id="f-start" placeholder="2022" min="1950" max="2040">
+        </div>
+        <div class="form-group">
+          <label>End Year</label>
+          <input type="number" id="f-end" placeholder="Blank = Present" min="1950" max="2040">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Side</label>
+        <select id="f-side">
+          <option value="left">Left</option>
+          <option value="right">Right</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Colour</label>
+        <!-- Swatches injected by JS — keep hex values in sync with /css/styles.css -->
+        <div class="color-swatches" id="color-swatches"></div>
+        <input type="hidden" id="f-color" value="teal">
+      </div>
+
+      <div class="form-group">
+        <label>Description <span style="text-transform:none;font-weight:400;opacity:.6">(optional)</span></label>
+        <textarea id="f-desc" rows="2" placeholder="Brief description..."></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-cancel"  onclick="closeForm()">Cancel</button>
+        <button class="btn-primary" id="submit-btn" onclick="submitForm()">Add to Timeline</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       JAVASCRIPT
+       ============================================================
+       COLORS hex values must stay in sync with --color-* tokens
+       in /css/styles.css Section 1.
+  ============================================================ -->
+  <script>
+
+    /* ── Colour palette ──────────────────────────────────────── */
+    const COLORS = [
+      { key:'purple', hex:'#6c4fa3', label:'Purple' },
+      { key:'teal',   hex:'#1a9b8a', label:'Teal'   },
+      { key:'green',  hex:'#2e7d5e', label:'Green'  },
+      { key:'pink',   hex:'#c23b6e', label:'Pink'   },
+      { key:'red',    hex:'#b5293b', label:'Red'     },
+      { key:'blue',   hex:'#2563b0', label:'Blue'   },
+      { key:'orange', hex:'#c2620a', label:'Orange' },
+      { key:'navy',   hex:'#1e3a5f', label:'Navy'   },
+    ];
+
+    /* Build swatch picker once */
+    const swatchWrap = document.getElementById('color-swatches');
+    COLORS.forEach(c => {
+      const s = document.createElement('div');
+      s.className        = 'swatch';
+      s.style.background = c.hex;
+      s.dataset.color    = c.key;
+      s.title            = c.label;
+      s.addEventListener('click', () => pickColor(c.key));
+      swatchWrap.appendChild(s);
+    });
+
+    function pickColor(key) {
+      document.getElementById('f-color').value = key;
+      document.querySelectorAll('.swatch').forEach(s =>
+        s.classList.toggle('selected', s.dataset.color === key)
+      );
+    }
+    pickColor('teal');
+
+    /* Helper: hex for a given color key */
+    function hexFor(key) {
+      return (COLORS.find(c => c.key === key) || {}).hex || '#888';
+    }
+
+
+    /* ── Timeline data ───────────────────────────────────────────
+       Fields: type, title, org, start, end, side, color, desc
+       end: null renders as "Present"
+    ------------------------------------------------------------ */
+    const entries = [
+      { type:'experience', side:'left',  color:'purple',
+        title:'Founder & Executive Producer', org:'',
+        start:2026, end:null,
+        desc:'Leading creative production and studio strategy.' },
+      { type:'experience', side:'left',  color:'teal',
+        title:'Partnerships & Head of...', org:'DON PABLO COFFEE',
+        start:2025, end:2026,
+        desc:'Managed key brand partnerships and strategic growth.' },
+      { type:'experience', side:'left',  color:'green',
+        title:'Lead AI Production...', org:'ELETTRO INTERAC.',
+        start:2024, end:2025,
+        desc:'Directed AI-driven interactive production pipelines.' },
+      { type:'experience', side:'left',  color:'pink',
+        title:'Global Organic Social Media Senior Project...', org:'AUDIBLE AMAZON',
+        start:2023, end:2024,
+        desc:'Oversaw global social content strategy across platforms.' },
+      { type:'education',  side:'right', color:'red',
+        title:'Business Administration', org:'University',
+        start:2023, end:2026,
+        desc:'Focused on entrepreneurship and marketing.' },
+    ];
+
+
+    /* ── Close dots menus on outside click ───────────────────── */
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.dots-wrapper'))
+        document.querySelectorAll('.dots-menu.open')
+                .forEach(m => m.classList.remove('open'));
+    });
+
+
+    /* ── Year range across all entries ──────────────────────── */
+    function getYears() {
+      if (!entries.length) return { min:2022, max:2026 };
+      const all = entries.flatMap(e => [e.start, e.end || e.start]);
+      return { min: Math.min(...all), max: Math.max(...all) };
+    }
+
+
+    /* ── OVERLAP FIX: render timeline by year blocks ─────────────
+       Strategy: group entries by start year, then within each year
+       block render left-column and right-column cards independently
+       in stacked rows. Each side gets its own flex column so cards
+       never fight each other for the same vertical space.
+       If one side has more cards than the other, invisible spacer
+       divs balance the grid so year labels stay centred.
+    ------------------------------------------------------------ */
+    function renderTimeline() {
+      const { min, max } = getYears();
+      const body = document.getElementById('timeline-body');
+      body.innerHTML = '';
+
+      let animDelay = 0;
+
+      for (let y = max + 1; y >= min - 1; y--) {
+
+        /* Year label */
+        const ym = document.createElement('div');
+        ym.className = 'year-marker';
+        ym.innerHTML = `<span class="year-label">${y}</span>`;
+        body.appendChild(ym);
+
+        /* All entries that START this year */
+        const inYear = entries.filter(e => e.start === y);
+        if (!inYear.length) continue;
+
+        const lefts  = inYear.filter(e => e.side === 'left');
+        const rights = inYear.filter(e => e.side === 'right');
+        const maxLen = Math.max(lefts.length, rights.length);
+
+        /* Year block: two columns side-by-side */
+        const block = document.createElement('div');
+        block.className = 'year-block';
+
+        const colL = document.createElement('div');
+        const colR = document.createElement('div');
+        colL.className = 'col-left';
+        colR.className = 'col-right';
+
+        /* Fill left column */
+        lefts.forEach(e => {
+          const el = createCard(e, animDelay++);
+          colL.appendChild(el);
+        });
+
+        /* Fill right column */
+        rights.forEach(e => {
+          const el = createCard(e, animDelay++);
+          colR.appendChild(el);
+        });
+
+        /* Balance columns with invisible spacers so the grid
+           doesn't collapse on the shorter side */
+        const diff = lefts.length - rights.length;
+        if (diff > 0) {
+          for (let i = 0; i < diff; i++) {
+            const sp = document.createElement('div');
+            sp.className = 'col-spacer';
+            // Approximate the height of a missing card
+            sp.style.height = '80px';
+            colR.appendChild(sp);
+          }
+        } else if (diff < 0) {
+          for (let i = 0; i < -diff; i++) {
+            const sp = document.createElement('div');
+            sp.className = 'col-spacer';
+            sp.style.height = '80px';
+            colL.appendChild(sp);
+          }
+        }
+
+        block.appendChild(colL);
+        block.appendChild(colR);
+        body.appendChild(block);
+      }
+    }
+
+
+    /* ── Create a single card DOM element ────────────────────── */
+    function createCard(e, delayIndex) {
+      const idx   = entries.indexOf(e);
+      const title = e.title.length > 40 ? e.title.slice(0, 38) + '\u2026' : e.title;
+      const org   = e.org && e.org.length > 26 ? e.org.slice(0, 24) + '\u2026' : e.org;
+      const dates = e.end
+        ? `${e.start} \u2013 ${e.end}`
+        : `${e.start} \u2013 Present`;
+
+      const card = document.createElement('div');
+      card.className = `card ${e.color}`;
+      card.dataset.idx = idx;
+      card.style.animationDelay = `${delayIndex * 70}ms`;
+
+      card.innerHTML = `
+        <div class="card-title">${title}</div>
+        ${org ? `<div class="card-sub">${org}</div>` : ''}
+        <div class="card-dates">${dates}</div>
+
+        <div class="card-actions">
+          <div class="dots-wrapper">
+            <button class="icon-btn dots-toggle" title="Options">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+                <circle cx="2"  cy="7" r="1.5"/>
+                <circle cx="7"  cy="7" r="1.5"/>
+                <circle cx="12" cy="7" r="1.5"/>
+              </svg>
+            </button>
+            <div class="dots-menu">
+              <button class="edit-btn" data-idx="${idx}">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"
+                     stroke="currentColor" stroke-width="1.4">
+                  <path d="M8.5 1.5l2 2L3 11H1V9L8.5 1.5z"/>
+                </svg>
+                Edit
+              </button>
+            </div>
+          </div>
+          <button class="icon-btn danger delete-btn" data-idx="${idx}" title="Delete">
+            <svg width="12" height="13" viewBox="0 0 12 13" fill="currentColor">
+              <path d="M.5 3h11M4 3V2a.5.5 0 0 1 .5-.5h3A.5.5 0 0 1 8 2v1
+                       M2 3l.55 7.3a1 1 0 0 0 1 .9h4.9a1 1 0 0 0 1-.9L10 3"/>
+            </svg>
+          </button>
+        </div>`;
+
+      /* Click card BODY → open detail modal */
+      card.addEventListener('click', () => openDetail(idx));
+
+      /* Action buttons stop propagation so they don't trigger the modal */
+      card.querySelectorAll('.dots-toggle').forEach(btn =>
+        btn.addEventListener('click', ev => {
+          ev.stopPropagation();
+          const menu    = btn.nextElementSibling;
+          const wasOpen = menu.classList.contains('open');
+          document.querySelectorAll('.dots-menu.open').forEach(m => m.classList.remove('open'));
+          if (!wasOpen) menu.classList.add('open');
+        })
+      );
+
+      card.querySelectorAll('.edit-btn').forEach(btn =>
+        btn.addEventListener('click', ev => {
+          ev.stopPropagation();
+          document.querySelectorAll('.dots-menu.open').forEach(m => m.classList.remove('open'));
+          openForm('edit', null, parseInt(btn.dataset.idx));
+        })
+      );
+
+      card.querySelectorAll('.delete-btn').forEach(btn =>
+        btn.addEventListener('click', ev => {
+          ev.stopPropagation();
+          deleteEntry(parseInt(btn.dataset.idx));
+        })
+      );
+
+      return card;
+    }
+
+
+    /* ── Detail modal ────────────────────────────────────────── */
+    function openDetail(idx) {
+      const e = entries[idx];
+      const dates = e.end
+        ? `${e.start} \u2013 ${e.end}`
+        : `${e.start} \u2013 Present`;
+
+      document.getElementById('modal-accent').style.background = hexFor(e.color);
+      document.getElementById('modal-type').textContent  = e.type === 'experience' ? '💼 Experience' : '🎓 Education';
+      document.getElementById('modal-title').textContent = e.title;
+      document.getElementById('modal-org').textContent   = e.org || '';
+      document.getElementById('modal-dates').textContent = dates;
+
+      const descEl = document.getElementById('modal-desc');
+      if (e.desc) {
+        descEl.textContent    = e.desc;
+        descEl.style.display  = 'block';
+      } else {
+        descEl.style.display = 'none';
+      }
+
+      document.getElementById('detail-overlay').classList.add('active');
+    }
+
+    function closeDetail() {
+      document.getElementById('detail-overlay').classList.remove('active');
+    }
+
+    document.getElementById('detail-overlay').addEventListener('click', e => {
+      if (e.target === e.currentTarget) closeDetail();
+    });
+
+
+    /* ── Delete ──────────────────────────────────────────────── */
+    function deleteEntry(idx) {
+      if (!confirm('Remove this entry from the timeline?')) return;
+      entries.splice(idx, 1);
+      renderTimeline();
+    }
+
+
+    /* ── Add / Edit form ─────────────────────────────────────── */
+    function openForm(mode, typeHint, editIdx) {
+      document.getElementById('form-mode').value     = mode;
+      document.getElementById('form-edit-idx').value = editIdx !== undefined ? editIdx : -1;
+
+      if (mode === 'edit' && editIdx >= 0) {
+        const e = entries[editIdx];
+        document.getElementById('form-heading').textContent = 'Edit Entry';
+        document.getElementById('submit-btn').textContent   = 'Save Changes';
+        document.getElementById('f-type').value  = e.type;
+        document.getElementById('f-title').value = e.title;
+        document.getElementById('f-org').value   = e.org   || '';
+        document.getElementById('f-start').value = e.start;
+        document.getElementById('f-end').value   = e.end   || '';
+        document.getElementById('f-side').value  = e.side;
+        document.getElementById('f-desc').value  = e.desc  || '';
+        pickColor(e.color);
+      } else {
+        const isEdu = typeHint === 'education';
+        document.getElementById('form-heading').textContent = isEdu ? 'Add Education' : 'Add Experience';
+        document.getElementById('submit-btn').textContent   = 'Add to Timeline';
+        document.getElementById('f-type').value  = typeHint || 'experience';
+        document.getElementById('f-title').value = '';
+        document.getElementById('f-org').value   = '';
+        document.getElementById('f-start').value = '';
+        document.getElementById('f-end').value   = '';
+        document.getElementById('f-side').value  = isEdu ? 'right' : 'left';
+        document.getElementById('f-desc').value  = '';
+        pickColor(isEdu ? 'red' : 'teal');
+      }
+
+      document.getElementById('form-overlay').classList.add('active');
+    }
+
+    function closeForm() {
+      document.getElementById('form-overlay').classList.remove('active');
+    }
+
+    document.getElementById('form-overlay').addEventListener('click', e => {
+      if (e.target === e.currentTarget) closeForm();
+    });
+
+    function submitForm() {
+      const title = document.getElementById('f-title').value.trim();
+      const start = parseInt(document.getElementById('f-start').value);
+      if (!title || isNaN(start)) {
+        alert('Please enter at least a title and start year.');
+        return;
+      }
+
+      const entry = {
+        type:  document.getElementById('f-type').value,
+        title,
+        org:   document.getElementById('f-org').value.trim(),
+        start,
+        end:   parseInt(document.getElementById('f-end').value) || null,
+        side:  document.getElementById('f-side').value,
+        color: document.getElementById('f-color').value,
+        desc:  document.getElementById('f-desc').value.trim(),
+      };
+
+      const mode    = document.getElementById('form-mode').value;
+      const editIdx = parseInt(document.getElementById('form-edit-idx').value);
+
+      if (mode === 'edit' && editIdx >= 0) entries[editIdx] = entry;
+      else entries.push(entry);
+
+      closeForm();
+      renderTimeline();
+    }
+
+
+    /* ── Initial render ──────────────────────────────────────── */
+    renderTimeline();
+
+  </script>
+</body>
+</html>
