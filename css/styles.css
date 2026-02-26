@@ -1,42 +1,29 @@
 /* ============================================================
    GLOBAL CSS CONTROLLER  —  /css/styles.css
    ============================================================
-   This is the single source of truth for the entire project.
-   To retheme, resize, or recolour anything site-wide, edit
-   the :root variables in Section 1. Everything else cascades
-   from those tokens automatically.
+   Single source of truth for all design tokens and component
+   styles. To retheme the site, edit Section 1 only.
    ============================================================ */
 
 
 /* ------------------------------------------------------------
    SECTION 1 — DESIGN TOKENS
-   Change these to retheme the whole site instantly.
    ------------------------------------------------------------ */
 :root {
 
-  /* ── Typography ─────────────────────────────────────────── */
+  /* Typography */
   --font-body:    'DM Sans', sans-serif;
   --font-display: 'Playfair Display', serif;
 
-  --text-xs:   0.72rem;
-  --text-sm:   0.78rem;
-  --text-base: 0.88rem;
-  --text-md:   0.92rem;
-  --text-lg:   1.2rem;
-  --text-xl:   1.6rem;
+  /* Colours */
+  --bg:      #f5f3ef;
+  --surface: #ffffff;
+  --text:    #1a1a2e;
+  --muted:   #7a7a8c;
+  --line:    #d4d0ca;
 
-  /* ── Colours ─────────────────────────────────────────────── */
-  --bg:      #f5f3ef;   /* page background              */
-  --surface: #ffffff;   /* modals, form panels          */
-  --text:    #1a1a2e;   /* primary text                 */
-  --muted:   #7a7a8c;   /* secondary / placeholder text */
-  --line:    #d4d0ca;   /* borders, dividers, timeline  */
-
-  /* ── Card colour palette ─────────────────────────────────
-     Used as CSS classes (.purple, .teal …) on .card elements.
-     The JS COLORS array in index.html must mirror these hex
-     values so the colour-picker swatches stay in sync.
-  ---------------------------------------------------------- */
+  /* Card colour palette
+     Keep these in sync with the COLORS array in index.html */
   --color-purple: #6c4fa3;
   --color-teal:   #1a9b8a;
   --color-green:  #2e7d5e;
@@ -46,11 +33,11 @@
   --color-orange: #c2620a;
   --color-navy:   #1e3a5f;
 
-  /* ── Danger / destructive ───────────────────────────────── */
+  /* Danger */
   --danger:       #e05555;
   --danger-hover: rgba(220,50,50,0.55);
 
-  /* ── Spacing ─────────────────────────────────────────────── */
+  /* Spacing */
   --space-xs:  4px;
   --space-sm:  8px;
   --space-md:  14px;
@@ -58,34 +45,34 @@
   --space-xl:  32px;
   --space-xxl: 40px;
 
-  /* ── Radii ───────────────────────────────────────────────── */
-  --radius:      10px;  /* cards, inputs                */
-  --radius-lg:   16px;  /* modals, form boxes           */
-  --radius-pill: 50px;  /* pill-shaped buttons          */
-  --radius-sm:    6px;  /* small icon buttons           */
+  /* Radii */
+  --radius:      10px;
+  --radius-lg:   16px;
+  --radius-pill: 50px;
+  --radius-sm:    6px;
 
-  /* ── Shadows ─────────────────────────────────────────────── */
+  /* Shadows */
   --shadow-sm: 0 4px 12px rgba(0,0,0,0.08);
   --shadow-md: 0 12px 32px rgba(0,0,0,0.20);
   --shadow-lg: 0 24px 64px rgba(0,0,0,0.25);
 
-  /* ── Transitions ─────────────────────────────────────────── */
+  /* Transitions */
   --t-fast:   0.15s ease;
   --t-normal: 0.25s ease;
   --t-slow:   0.45s ease;
 
-  /* ── Overlay ─────────────────────────────────────────────── */
+  /* Overlay */
   --overlay-bg: rgba(0,0,0,0.45);
 
-  /* ── Layout ──────────────────────────────────────────────── */
-  --max-width:  860px;
-  --page-pad:   40px 20px 80px;
+  /* Layout */
+  --max-width: 860px;
+  --page-pad:  40px 20px 80px;
 
-  /* ── Timeline specific ───────────────────────────────────── */
+  /* Timeline */
   --spine-width:    2px;
   --dot-size:       10px;
   --card-max-width: 320px;
-  --side-gap:       32px;  /* space between card edge and spine */
+  --side-gap:       32px;
 }
 
 
@@ -115,14 +102,12 @@ body {
   max-width: var(--max-width);
   margin: 0 auto var(--space-xxl);
 }
-
 .page-header h1 {
   font-family: var(--font-display);
-  font-size: var(--text-xl);
+  font-size: 1.6rem;
   color: var(--text);
   margin-bottom: var(--space-xs);
 }
-
 .page-header p {
   font-size: 0.9rem;
   color: var(--muted);
@@ -130,7 +115,7 @@ body {
 
 
 /* ------------------------------------------------------------
-   SECTION 4 — TOP CONTROLS (Add buttons row)
+   SECTION 4 — TOP CONTROLS
    ------------------------------------------------------------ */
 .controls {
   max-width: var(--max-width);
@@ -144,15 +129,13 @@ body {
 /* ------------------------------------------------------------
    SECTION 5 — BUTTONS
    ------------------------------------------------------------ */
-
-/* Outline pill — Add Experience / Add Education */
 .btn {
   padding: 10px 24px;
   border: 2px solid var(--text);
   border-radius: var(--radius-pill);
   background: transparent;
   font-family: var(--font-body);
-  font-size: var(--text-xs);
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -165,7 +148,6 @@ body {
   color: var(--bg);
 }
 
-/* Solid primary — form submit */
 .btn-primary {
   flex: 1;
   padding: 11px;
@@ -174,28 +156,26 @@ body {
   border: none;
   border-radius: var(--radius);
   font-family: var(--font-body);
-  font-size: var(--text-base);
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   transition: opacity var(--t-fast);
 }
 .btn-primary:hover { opacity: 0.82; }
 
-/* Ghost cancel — form cancel */
 .btn-cancel {
   padding: 11px 18px;
   background: transparent;
   border: 1.5px solid var(--line);
   border-radius: var(--radius);
   font-family: var(--font-body);
-  font-size: var(--text-base);
+  font-size: 0.85rem;
   cursor: pointer;
   color: var(--text);
   transition: border-color var(--t-fast);
 }
 .btn-cancel:hover { border-color: var(--text); }
 
-/* Small square icon button — inside card action bar */
 .icon-btn {
   display: flex;
   align-items: center;
@@ -234,43 +214,57 @@ body {
   background: var(--line);
 }
 
-/* Year marker */
-.year-marker {
+/* The timeline body uses CSS grid — JS writes absolute-positioned
+   year labels and relatively-positioned card rows into this */
+#timeline-body {
   position: relative;
+}
+
+/* Year markers */
+.year-marker {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 48px;
+  padding: 10px 0;
+  position: relative;
   z-index: 2;
 }
-
 .year-label {
   background: var(--bg);
-  padding: 2px 10px;
-  font-size: var(--text-sm);
+  padding: 3px 12px;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--muted);
   letter-spacing: 0.04em;
   border-radius: 20px;
   border: 1px solid var(--line);
-  z-index: 2;
   user-select: none;
 }
 
-/* Entry row */
-.row {
-  display: flex;
-  align-items: flex-start;
-  padding: 6px 0;
+/* Two-column row inside each year block */
+.year-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  position: relative;
 }
 
-.side {
-  flex: 1;
+/* Each side column */
+.col-left,
+.col-right {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 10px;
 }
-.side.left  { justify-content: flex-end;   padding-right: var(--side-gap); }
-.side.right { justify-content: flex-start; padding-left:  var(--side-gap); }
-.side.empty { pointer-events: none; }
+.col-left  { align-items: flex-end;   padding-right: var(--side-gap); }
+.col-right { align-items: flex-start; padding-left:  var(--side-gap); }
+
+/* Invisible spacer used to align columns when one side has more cards */
+.col-spacer {
+  visibility: hidden;
+  pointer-events: none;
+}
 
 
 /* ------------------------------------------------------------
@@ -280,13 +274,13 @@ body {
   width: 100%;
   max-width: var(--card-max-width);
   border-radius: var(--radius);
-  padding: 14px 16px 42px; /* bottom padding reserves space for action bar */
+  padding: 14px 16px 42px;
   position: relative;
+  cursor: pointer;
   opacity: 0;
-  transform: translateY(16px);
+  transform: translateY(12px);
   transition: transform var(--t-normal), box-shadow var(--t-normal);
   animation: fadeUp var(--t-slow) forwards;
-  cursor: default;
 }
 .card:hover {
   transform: translateY(-2px);
@@ -295,26 +289,26 @@ body {
 
 /* Card text */
 .card-title {
-  font-size: var(--text-md);
+  font-size: 0.92rem;
   font-weight: 600;
   color: #fff;
   line-height: 1.3;
   margin-bottom: var(--space-xs);
 }
 .card-sub {
-  font-size: var(--text-xs);
+  font-size: 0.75rem;
   color: rgba(255,255,255,0.72);
   font-weight: 500;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 .card-dates {
-  font-size: var(--text-xs);
+  font-size: 0.72rem;
   color: rgba(255,255,255,0.55);
   margin-top: var(--space-sm);
 }
 
-/* Timeline connector dot */
+/* Connector dot on the spine */
 .card::before {
   content: '';
   position: absolute;
@@ -326,10 +320,10 @@ body {
   border: 2px solid rgba(255,255,255,0.5);
   z-index: 3;
 }
-.side.left  .card::before { right: calc(-1 * var(--side-gap) - var(--dot-size) / 2 + 3px); }
-.side.right .card::before { left:  calc(-1 * var(--side-gap) - var(--dot-size) / 2 + 3px); }
+.col-left  .card::before { right: calc(-1 * var(--side-gap) + 1px); }
+.col-right .card::before { left:  calc(-1 * var(--side-gap) + 1px); }
 
-/* Card colour variants — maps to --color-* tokens above */
+/* Card colour variants */
 .purple { background: var(--color-purple); }
 .teal   { background: var(--color-teal);   }
 .green  { background: var(--color-green);  }
@@ -341,7 +335,7 @@ body {
 
 
 /* ------------------------------------------------------------
-   SECTION 8 — CARD ACTION BAR  (hover-reveal bottom strip)
+   SECTION 8 — CARD ACTION BAR  (hover reveal)
    ------------------------------------------------------------ */
 .card-actions {
   position: absolute;
@@ -362,11 +356,9 @@ body {
 
 
 /* ------------------------------------------------------------
-   SECTION 9 — THREE-DOT DROPDOWN MENU
+   SECTION 9 — THREE-DOT DROPDOWN
    ------------------------------------------------------------ */
-.dots-wrapper {
-  position: relative;
-}
+.dots-wrapper { position: relative; }
 
 .dots-menu {
   display: none;
@@ -416,7 +408,86 @@ body {
 
 
 /* ------------------------------------------------------------
-   SECTION 11 — ADD / EDIT FORM PANEL
+   SECTION 11 — DETAIL MODAL (card info popup)
+   ------------------------------------------------------------ */
+.modal-box {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  max-width: 460px;
+  width: 90%;
+  position: relative;
+  box-shadow: var(--shadow-lg);
+  animation: scaleIn 0.2s ease;
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--muted);
+  cursor: pointer;
+  line-height: 1;
+  transition: color var(--t-fast);
+}
+.modal-close:hover { color: var(--text); }
+
+.modal-type {
+  font-size: 0.73rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--text);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.modal-org {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.modal-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.83rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+/* Coloured accent bar at top of modal */
+.modal-accent {
+  height: 4px;
+  border-radius: 4px 4px 0 0;
+  margin: calc(-1 * var(--space-xl)) calc(-1 * var(--space-xl)) var(--space-lg);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.modal-desc {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+
+/* ------------------------------------------------------------
+   SECTION 12 — ADD / EDIT FORM PANEL
    ------------------------------------------------------------ */
 .form-box {
   background: var(--surface);
@@ -432,18 +503,16 @@ body {
 
 .form-box h3 {
   font-family: var(--font-display);
-  font-size: var(--text-lg);
+  font-size: 1.2rem;
   color: var(--text);
   margin-bottom: var(--space-lg);
 }
 
-/* Form field group */
-.form-group {
-  margin-bottom: var(--space-md);
-}
+.form-group { margin-bottom: var(--space-md); }
+
 .form-group label {
   display: block;
-  font-size: var(--text-sm);
+  font-size: 0.78rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -458,7 +527,7 @@ body {
   border: 1.5px solid var(--line);
   border-radius: var(--radius);
   font-family: var(--font-body);
-  font-size: var(--text-base);
+  font-size: 0.88rem;
   background: var(--bg);
   color: var(--text);
   outline: none;
@@ -466,18 +535,11 @@ body {
 }
 .form-group input:focus,
 .form-group textarea:focus,
-.form-group select:focus {
-  border-color: var(--text);
-}
+.form-group select:focus { border-color: var(--text); }
 
-/* Side-by-side form fields */
-.form-row {
-  display: flex;
-  gap: 10px;
-}
+.form-row { display: flex; gap: 10px; }
 .form-row .form-group { flex: 1; }
 
-/* Form action buttons row */
 .form-actions {
   display: flex;
   gap: 10px;
@@ -486,7 +548,7 @@ body {
 
 
 /* ------------------------------------------------------------
-   SECTION 12 — COLOUR SWATCH PICKER
+   SECTION 13 — COLOUR SWATCH PICKER
    ------------------------------------------------------------ */
 .color-swatches {
   display: flex;
@@ -520,10 +582,10 @@ body {
 
 
 /* ------------------------------------------------------------
-   SECTION 13 — ANIMATIONS
+   SECTION 14 — ANIMATIONS
    ------------------------------------------------------------ */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0);    }
 }
 
@@ -534,16 +596,13 @@ body {
 
 
 /* ------------------------------------------------------------
-   SECTION 14 — RESPONSIVE
+   SECTION 15 — RESPONSIVE
    ------------------------------------------------------------ */
-@media (max-width: 560px) {
+@media (max-width: 600px) {
   :root {
-    --side-gap: 22px;  /* tighten card-to-spine gap on mobile */
+    --side-gap: 20px;
+    --card-max-width: 100%;
   }
-
-  .card { max-width: 100%; }
-
   .controls { gap: 10px; }
-
   .btn { padding: 9px 16px; font-size: 0.7rem; }
 }
