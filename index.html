@@ -1,486 +1,583 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Work &amp; Education Timeline</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Timeline – Stashbox</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  <!-- Google Fonts — update family names here AND in --font-* tokens in /css/styles.css -->
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  :root {
+    --green:      #2d6a2d;
+    --green-dim:  #1e4a1e;
+    --gold:       #c9a84c;
+    --gold-light: #f0d080;
+    --dark:       #0e0e0e;
+    --mid:        #161616;
+    --surface:    #1c1c1c;
+    --border:     rgba(201,168,76,0.18);
+    --text:       #ddd6c4;
+    --muted:      #666;
+    --nav-w:      220px;
+  }
 
-  <!-- All styles live here — no inline CSS in this file -->
-  <link rel="stylesheet" href="css/styles.css">
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  /* ── TOP NAV ── */
+  .topnav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 56px;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    z-index: 200;
+  }
+  .topnav-logo img { height: 30px; display: block; }
+  .topnav-links {
+    display: flex; gap: 2rem; list-style: none;
+  }
+  .topnav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .topnav-links a:hover { color: var(--gold); }
+
+  /* ── LAYOUT SHELL ── */
+  .shell {
+    display: flex;
+    padding-top: 56px;
+    min-height: 100vh;
+  }
+
+  /* ── LEFT YEAR NAV ── */
+  .year-nav {
+    width: var(--nav-w);
+    flex-shrink: 0;
+    position: sticky;
+    top: 56px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    padding: 2.5rem 0 2.5rem 2rem;
+    scrollbar-width: none;
+  }
+  .year-nav::-webkit-scrollbar { display: none; }
+
+  .year-nav-label {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .decade-group { margin-bottom: 1.75rem; }
+
+  .decade-heading {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    color: var(--green);
+    margin-bottom: 0.5rem;
+  }
+
+  .year-nav a {
+    display: block;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 3px 0;
+    letter-spacing: 0.04em;
+    transition: color 0.2s, padding-left 0.2s;
+    border-left: 2px solid transparent;
+    padding-left: 8px;
+    margin-left: -2px;
+  }
+  .year-nav a:hover {
+    color: var(--text);
+  }
+  .year-nav a.active {
+    color: var(--gold);
+    border-left-color: var(--gold);
+    padding-left: 12px;
+  }
+
+  /* ── TIMELINE CONTENT ── */
+  .timeline-content {
+    flex: 1;
+    min-width: 0;
+    padding: 3rem 4rem 6rem 4rem;
+    max-width: 820px;
+  }
+
+  /* Page title */
+  .page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 8vw, 5.5rem);
+    letter-spacing: 0.07em;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+  .page-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 3.5rem;
+    padding-bottom: 3.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Year section */
+  .year-section {
+    margin-bottom: 4rem;
+  }
+
+  .year-anchor {
+    display: block;
+    /* offset for sticky topnav */
+    margin-top: -56px;
+    padding-top: 56px;
+    pointer-events: none;
+  }
+
+  .year-heading {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    letter-spacing: 0.06em;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+    opacity: 0.15;
+    transition: opacity 0.3s;
+  }
+  .year-section.in-view .year-heading { opacity: 1; }
+
+  .year-divider {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 2rem;
+  }
+
+  /* Entry */
+  .entry {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 0 1.75rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+  }
+
+  /* vertical line connecting entries */
+  .entry::before {
+    content: '';
+    position: absolute;
+    left: 90px;
+    top: 8px;
+    bottom: -2.5rem;
+    width: 1px;
+    background: var(--border);
+  }
+  .entry:last-child::before { display: none; }
+
+  .entry-date {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green);
+    font-weight: 500;
+    padding-top: 3px;
+    text-align: right;
+    position: relative;
+  }
+  /* dot on the line */
+  .entry-date::after {
+    content: '';
+    position: absolute;
+    right: -1.75rem;
+    top: 7px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold);
+    transform: translateX(50%);
+    box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+  }
+
+  .entry-body { padding-left: 0.5rem; }
+
+  .entry-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.05em;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 0.4rem;
+  }
+
+  .entry-tag {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 2px;
+    margin-bottom: 0.6rem;
+    font-weight: 500;
+  }
+  .entry-tag.release  { background: rgba(45,106,45,0.25); color: #6db96d; border: 1px solid rgba(45,106,45,0.4); }
+  .entry-tag.gig      { background: rgba(201,168,76,0.12); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+  .entry-tag.lineup   { background: rgba(100,120,200,0.12); color: #909fdf; border: 1px solid rgba(100,120,200,0.3); }
+  .entry-tag.milestone{ background: rgba(180,80,80,0.12); color: #d88; border: 1px solid rgba(180,80,80,0.3); }
+
+  .entry-text {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.75;
+  }
+
+  .entry-img {
+    margin-top: 1rem;
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    max-width: 420px;
+  }
+  .entry-img img {
+    width: 100%;
+    display: block;
+    filter: saturate(0.85);
+  }
+  .entry-img figcaption {
+    font-size: 11px;
+    color: var(--muted);
+    padding: 6px 10px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .year-nav { display: none; }
+    .timeline-content { padding: 2rem 1.25rem 4rem; }
+    .entry { grid-template-columns: 60px 1fr; gap: 0 1rem; }
+    .entry::before { left: 60px; }
+    .entry-date::after { right: -1rem; }
+  }
+</style>
 </head>
 <body>
 
-  <!-- ── Page header ──────────────────────────────────────────── -->
-  <div class="page-header">
-    <h1>Work &amp; Education History</h1>
-    <p>Please enter details about your work experience and education.</p>
-  </div>
+<!-- TOP NAV -->
+<nav class="topnav">
+  <a class="topnav-logo" href="https://stashbox.com">
+    <img src="https://stashbox.com/wp-content/uploads/2023/09/cropped-Stashbox-Logo-Transparent-RastaColors-1024x294.png" alt="Stashbox">
+  </a>
+  <ul class="topnav-links">
+    <li><a href="https://stashbox.com/dylan/">Dylan</a></li>
+    <li><a href="https://stashbox.com/bookband/">Booking</a></li>
+    <li><a href="https://stashbox.com/setlists/">Setlists</a></li>
+    <li><a href="https://stashbox.com/posts/">Posts</a></li>
+  </ul>
+</nav>
 
-  <!-- ── Add buttons ──────────────────────────────────────────── -->
-  <div class="controls">
-    <button class="btn" onclick="openForm('add','experience')">+ Add Experience</button>
-    <button class="btn" onclick="openForm('add','education')">+ Add Education</button>
-  </div>
+<div class="shell">
 
-  <!-- ── Timeline ─────────────────────────────────────────────── -->
-  <div class="timeline-wrapper">
-    <div class="center-line"></div>
-    <div id="timeline-body"></div>
-  </div>
+  <!-- LEFT YEAR NAV -->
+  <nav class="year-nav" aria-label="Timeline navigation">
+    <div class="year-nav-label">Timeline</div>
 
-
-  <!-- ── Detail modal (click a card to open) ──────────────────── -->
-  <div class="overlay" id="detail-overlay">
-    <div class="modal-box">
-      <div class="modal-accent" id="modal-accent"></div>
-      <button class="modal-close" onclick="closeDetail()">&#x2715;</button>
-      <p  class="modal-type"  id="modal-type"></p>
-      <h2 class="modal-title" id="modal-title"></h2>
-      <p  class="modal-org"   id="modal-org"></p>
-      <div class="modal-meta">
-        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5">
-          <rect x="1" y="2" width="11" height="10" rx="1.5"/>
-          <path d="M1 5h11M4 1v2M9 1v2"/>
-        </svg>
-        <span id="modal-dates"></span>
-      </div>
-      <div class="modal-desc" id="modal-desc" style="display:none"></div>
+    <div class="decade-group">
+      <div class="decade-heading">2020s</div>
+      <a href="#y2025" data-year="2025">2025</a>
+      <a href="#y2024" data-year="2024">2024</a>
+      <a href="#y2023" data-year="2023">2023</a>
+      <a href="#y2022" data-year="2022">2022</a>
+      <a href="#y2021" data-year="2021">2021</a>
+      <a href="#y2020" data-year="2020">2020</a>
     </div>
-  </div>
+    <div class="decade-group">
+      <div class="decade-heading">2010s</div>
+      <a href="#y2019" data-year="2019">2019</a>
+      <a href="#y2018" data-year="2018">2018</a>
+      <a href="#y2017" data-year="2017">2017</a>
+      <a href="#y2016" data-year="2016">2016</a>
+      <a href="#y2015" data-year="2015">2015</a>
+      <a href="#y2014" data-year="2014">2014</a>
+      <a href="#y2013" data-year="2013">2013</a>
+      <a href="#y2012" data-year="2012">2012</a>
+    </div>
+  </nav>
 
+  <!-- TIMELINE CONTENT -->
+  <main class="timeline-content">
 
-  <!-- ── Add / Edit form ──────────────────────────────────────── -->
-  <div class="overlay" id="form-overlay">
-    <div class="form-box">
-      <h3 id="form-heading">Add Entry</h3>
+    <h1 class="page-title">Timeline</h1>
+    <p class="page-subtitle">The Stashbox Story &nbsp;·&nbsp; South Florida</p>
 
-      <input type="hidden" id="form-mode"     value="add">
-      <input type="hidden" id="form-edit-idx" value="-1">
-
-      <div class="form-group">
-        <label>Type</label>
-        <select id="f-type">
-          <option value="experience">Experience</option>
-          <option value="education">Education</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Title / Degree</label>
-        <input type="text" id="f-title" placeholder="e.g. Senior Designer">
-      </div>
-
-      <div class="form-group">
-        <label>Company / Institution</label>
-        <input type="text" id="f-org" placeholder="e.g. Acme Corp">
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Start Year</label>
-          <input type="number" id="f-start" placeholder="2022" min="1950" max="2040">
-        </div>
-        <div class="form-group">
-          <label>End Year</label>
-          <input type="number" id="f-end" placeholder="Blank = Present" min="1950" max="2040">
+    <!-- ═══ 2025 ═══ -->
+    <section class="year-section" id="y2025">
+      <span class="year-anchor" aria-hidden="true"></span>
+      <div class="year-heading">2025</div>
+      <div class="year-divider"></div>
+      <div class="entry">
+        <div class="entry-date">2025</div>
+        <div class="entry-body">
+          <div class="entry-title">Add Entry</div>
+          <span class="entry-tag gig">Gig</span>
+          <p class="entry-text">Placeholder — fill in with your 2025 highlights.</p>
         </div>
       </div>
+    </section>
 
-      <div class="form-group">
-        <label>Side</label>
-        <select id="f-side">
-          <option value="left">Left</option>
-          <option value="right">Right</option>
-        </select>
+    <!-- ═══ 2024 ═══ -->
+    <section class="year-section" id="y2024">
+      <span class="year-anchor" aria-hidden="true"></span>
+      <div class="year-heading">2024</div>
+      <div class="year-divider"></div>
+      <div class="entry">
+        <div class="entry-date">2024</div>
+        <div class="entry-body">
+          <div class="entry-title">Add Entry</div>
+          <span class="entry-tag milestone">Milestone</span>
+          <p class="entry-text">Placeholder — fill in with your 2024 highlights.</p>
+        </div>
       </div>
+    </section>
 
-      <div class="form-group">
-        <label>Colour</label>
-        <!-- Swatches injected by JS — keep hex values in sync with /css/styles.css -->
-        <div class="color-swatches" id="color-swatches"></div>
-        <input type="hidden" id="f-color" value="teal">
+    <!-- ═══ 2023 ═══ -->
+    <section class="year-section" id="y2023">
+      <span class="year-anchor" aria-hidden="true"></span>
+      <div class="year-heading">2023</div>
+      <div class="year-divider"></div>
+      <div class="entry">
+        <div class="entry-date">2023</div>
+        <div class="entry-body">
+          <div class="entry-title">Add Entry</div>
+          <span class="entry-tag gig">Gig</span>
+          <p class="entry-text">Placeholder — fill in with your 2023 highlights.</p>
+        </div>
       </div>
+    </section>
 
-      <div class="form-group">
-        <label>Description <span style="text-transform:none;font-weight:400;opacity:.6">(optional)</span></label>
-        <textarea id="f-desc" rows="2" placeholder="Brief description..."></textarea>
+    <!-- ═══ 2022 ═══ -->
+    <section class="year-section" id="y2022">
+      <span class="year-anchor" aria-hidden="true"></span>
+      <div class="year-heading">2022</div>
+      <div class="year-divider"></div>
+      <div class="entry">
+        <div class="entry-date">2022</div>
+        <div class="entry-body">
+          <div class="entry-title">Add Entry</div>
+          <span class="entry-tag release">Release</span>
+          <p class="entry-text">Placeholder — fill in with your 2022 highlights.</p>
+        </div>
       </div>
+    </section>
 
-      <div class="form-actions">
-        <button class="btn-cancel"  onclick="closeForm()">Cancel</button>
-        <button class="btn-primary" id="submit-btn" onclick="submitForm()">Add to Timeline</button>
+    <!-- ═══ 2021 ═══ -->
+    <section class="year-section" id="y2021">
+      <span class="year-anchor" aria-hidden="true"></span>
+      <div class="year-heading">2021</div>
+      <div class="year-divider"></div>
+      <div class="entry">
+        <div class="entry-date">2021</div>
+        <div class="entry-body">
+          <div class="entry-title">Add Entry</div>
+          <span class="entry-tag gig">Gig</span>
+          <p class="entry-text">Placeholder — fill in with your 2021 highlights.</p>
+        </div>
       </div>
-    </div>
-  </div>
+    </section>
 
+    <!-- ═══ 2020 ═══ -->
+    <section class="year-section" id="y2020">
+      <span class="year-anchor" aria-hidden="true"></span>
+      <div class="year-heading">2020</div>
+      <div class="year-divider"></div>
+      <div class="entry">
+        <div class="entry-date">2020</div>
+        <div class="entry-body">
+          <div class="entry-title">Add Entry</div>
+          <span class="entry-tag milestone">Milestone</span>
+          <p class="entry-text">Placeholder — fill in with your 2020 highlights.</p>
+        </div>
+      </div>
+    </section>
 
-  <!-- ============================================================
-       JAVASCRIPT
-       ============================================================
-       COLORS hex values must stay in sync with --color-* tokens
-       in /css/styles.css Section 1.
-  ============================================================ -->
-  <script>
+    <!-- ═══ 2019 ═══ -->
+    <section class="year-section" id="y2019">
+      <span class="year-anchor" aria-hidden="true"></span>
+      <div class="year-heading">2019</div>
+      <div class="year-divider"></div>
+      <div class="entry">
+        <div class="entry-date">2019</div>
+        <div class="entry-body">
+          <div class="entry-title">Add Entry</div>
+          <span class="entry-tag lineup">Lineup</span>
+          <p class="entry-text">Placeholder — fill in with your 2019 highlights.</p>
+        </div>
+      </div>
+    </section>
 
-    /* ── Colour palette ──────────────────────────────────────── */
-    const COLORS = [
-      { key:'purple', hex:'#6c4fa3', label:'Purple' },
-      { key:'teal',   hex:'#1a9b8a', label:'Teal'   },
-      { key:'green',  hex:'#2e7d5e', label:'Green'  },
-      { key:'pink',   hex:'#c23b6e', label:'Pink'   },
-      { key:'red',    hex:'#b5293b', label:'Red'     },
-      { key:'blue',   hex:'#2563b0', label:'Blue'   },
-      { key:'orange', hex:'#c2620a', label:'Orange' },
-      { key:'navy',   hex:'#1e3a5f', label:'Navy'   },
-    ];
+    <!-- ═══ 2018 ═══ -->
+    <section class="year-section" id="y2018">
+      <span class="year-anchor" aria-hidden="true"></span>
+      <div class="year-heading">2018</div>
+      <div class="year-divider"></div>
+      <div class="entry">
+        <div class="entry-date">2018</div>
+        <div class="entry-body">
+          <div class="entry-title">Add Entry</div>
+          <span class="entry-tag gig">Gig</span>
+          <p class="entry-text">Placeholder — fill in with your 2018 highlights.</p>
+        </div>
+      </div>
+    </section>
 
-    /* Build swatch picker once */
-    const swatchWrap = document.getElementById('color-swatches');
-    COLORS.forEach(c => {
-      const s = document.createElement('div');
-      s.className        = 'swatch';
-      s.style.background = c.hex;
-      s.dataset.color    = c.key;
-      s.title            = c.label;
-      s.addEventListener('click', () => pickColor(c.key));
-      swatchWrap.appendChild(s);
+    <!-- ═══ 2017 ═══ -->
+    <section class="year-section" id="y2017">
+      <span class="year-anchor" aria-hidden="true"></span>
+      <div class="year-heading">2017</div>
+      <div class="year-divider"></div>
+      <div class="entry">
+        <div class="entry-date">2017</div>
+        <div class="entry-body">
+          <div class="entry-title">Add Entry</div>
+          <span class="entry-tag release">Release</span>
+          <p class="entry-text">Placeholder — fill in with your 2017 highlights.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 2016 ═══ -->
+    <section class="year-section" id="y2016">
+      <span class="year-anchor" aria-hidden="true"></span>
+      <div class="year-heading">2016</div>
+      <div class="year-divider"></div>
+      <div class="entry">
+        <div class="entry-date">2016</div>
+        <div class="entry-body">
+          <div class="entry-title">Add Entry</div>
+          <span class="entry-tag gig">Gig</span>
+          <p class="entry-text">Placeholder — fill in with your 2016 highlights.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 2015 ═══ -->
+    <section class="year-section" id="y2015">
+      <span class="year-anchor" aria-hidden="true"></span>
+      <div class="year-heading">2015</div>
+      <div class="year-divider"></div>
+      <div class="entry">
+        <div class="entry-date">2015</div>
+        <div class="entry-body">
+          <div class="entry-title">Add Entry</div>
+          <span class="entry-tag milestone">Milestone</span>
+          <p class="entry-text">Placeholder — fill in with your 2015 highlights.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 2014 ═══ -->
+    <section class="year-section" id="y2014">
+      <span class="year-anchor" aria-hidden="true"></span>
+      <div class="year-heading">2014</div>
+      <div class="year-divider"></div>
+      <div class="entry">
+        <div class="entry-date">2014</div>
+        <div class="entry-body">
+          <div class="entry-title">Add Entry</div>
+          <span class="entry-tag gig">Gig</span>
+          <p class="entry-text">Placeholder — fill in with your 2014 highlights.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 2013 ═══ -->
+    <section class="year-section" id="y2013">
+      <span class="year-anchor" aria-hidden="true"></span>
+      <div class="year-heading">2013</div>
+      <div class="year-divider"></div>
+      <div class="entry">
+        <div class="entry-date">Spring</div>
+        <div class="entry-body">
+          <div class="entry-title">First Gig</div>
+          <span class="entry-tag gig">Gig</span>
+          <p class="entry-text">First live performance — venue, city, what songs you played.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ 2012 ═══ -->
+    <section class="year-section" id="y2012">
+      <span class="year-anchor" aria-hidden="true"></span>
+      <div class="year-heading">2012</div>
+      <div class="year-divider"></div>
+      <div class="entry">
+        <div class="entry-date">2012</div>
+        <div class="entry-body">
+          <div class="entry-title">The Band Forms</div>
+          <span class="entry-tag milestone">Milestone</span>
+          <p class="entry-text">Add your founding story here — who came together, where the first rehearsal was, what the vision was.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div><!-- /shell -->
+
+<script>
+  // Highlight active year in left nav based on scroll position
+  const sections = document.querySelectorAll('.year-section');
+  const navLinks = document.querySelectorAll('.year-nav a[data-year]');
+
+  const setActive = (id) => {
+    navLinks.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + id);
     });
+    // scroll the active link into view in the sidebar
+    const active = document.querySelector('.year-nav a.active');
+    if (active) active.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  };
 
-    function pickColor(key) {
-      document.getElementById('f-color').value = key;
-      document.querySelectorAll('.swatch').forEach(s =>
-        s.classList.toggle('selected', s.dataset.color === key)
-      );
-    }
-    pickColor('teal');
-
-    /* Helper: hex for a given color key */
-    function hexFor(key) {
-      return (COLORS.find(c => c.key === key) || {}).hex || '#888';
-    }
-
-
-    /* ── Timeline data ───────────────────────────────────────────
-       Fields: type, title, org, start, end, side, color, desc
-       end: null renders as "Present"
-    ------------------------------------------------------------ */
-    const entries = [
-      { type:'experience', side:'left',  color:'purple',
-        title:'Founder & Executive Producer', org:'',
-        start:2026, end:null,
-        desc:'Leading creative production and studio strategy.' },
-      { type:'experience', side:'left',  color:'teal',
-        title:'Partnerships & Head of...', org:'DON PABLO COFFEE',
-        start:2025, end:2026,
-        desc:'Managed key brand partnerships and strategic growth.' },
-      { type:'experience', side:'left',  color:'green',
-        title:'Lead AI Production...', org:'ELETTRO INTERAC.',
-        start:2024, end:2025,
-        desc:'Directed AI-driven interactive production pipelines.' },
-      { type:'experience', side:'left',  color:'pink',
-        title:'Global Organic Social Media Senior Project...', org:'AUDIBLE AMAZON',
-        start:2023, end:2024,
-        desc:'Oversaw global social content strategy across platforms.' },
-      { type:'education',  side:'right', color:'red',
-        title:'Business Administration', org:'University',
-        start:2023, end:2026,
-        desc:'Focused on entrepreneurship and marketing.' },
-    ];
-
-
-    /* ── Close dots menus on outside click ───────────────────── */
-    document.addEventListener('click', e => {
-      if (!e.target.closest('.dots-wrapper'))
-        document.querySelectorAll('.dots-menu.open')
-                .forEach(m => m.classList.remove('open'));
-    });
-
-
-    /* ── Year range across all entries ──────────────────────── */
-    function getYears() {
-      if (!entries.length) return { min:2022, max:2026 };
-      const all = entries.flatMap(e => [e.start, e.end || e.start]);
-      return { min: Math.min(...all), max: Math.max(...all) };
-    }
-
-
-    /* ── OVERLAP FIX: render timeline by year blocks ─────────────
-       Strategy: group entries by start year, then within each year
-       block render left-column and right-column cards independently
-       in stacked rows. Each side gets its own flex column so cards
-       never fight each other for the same vertical space.
-       If one side has more cards than the other, invisible spacer
-       divs balance the grid so year labels stay centred.
-    ------------------------------------------------------------ */
-    function renderTimeline() {
-      const { min, max } = getYears();
-      const body = document.getElementById('timeline-body');
-      body.innerHTML = '';
-
-      let animDelay = 0;
-
-      for (let y = max + 1; y >= min - 1; y--) {
-
-        /* Year label */
-        const ym = document.createElement('div');
-        ym.className = 'year-marker';
-        ym.innerHTML = `<span class="year-label">${y}</span>`;
-        body.appendChild(ym);
-
-        /* All entries that START this year */
-        const inYear = entries.filter(e => e.start === y);
-        if (!inYear.length) continue;
-
-        const lefts  = inYear.filter(e => e.side === 'left');
-        const rights = inYear.filter(e => e.side === 'right');
-        const maxLen = Math.max(lefts.length, rights.length);
-
-        /* Year block: two columns side-by-side */
-        const block = document.createElement('div');
-        block.className = 'year-block';
-
-        const colL = document.createElement('div');
-        const colR = document.createElement('div');
-        colL.className = 'col-left';
-        colR.className = 'col-right';
-
-        /* Fill left column */
-        lefts.forEach(e => {
-          const el = createCard(e, animDelay++);
-          colL.appendChild(el);
-        });
-
-        /* Fill right column */
-        rights.forEach(e => {
-          const el = createCard(e, animDelay++);
-          colR.appendChild(el);
-        });
-
-        /* Balance columns with invisible spacers so the grid
-           doesn't collapse on the shorter side */
-        const diff = lefts.length - rights.length;
-        if (diff > 0) {
-          for (let i = 0; i < diff; i++) {
-            const sp = document.createElement('div');
-            sp.className = 'col-spacer';
-            // Approximate the height of a missing card
-            sp.style.height = '80px';
-            colR.appendChild(sp);
-          }
-        } else if (diff < 0) {
-          for (let i = 0; i < -diff; i++) {
-            const sp = document.createElement('div');
-            sp.className = 'col-spacer';
-            sp.style.height = '80px';
-            colL.appendChild(sp);
-          }
-        }
-
-        block.appendChild(colL);
-        block.appendChild(colR);
-        body.appendChild(block);
-      }
-    }
-
-
-    /* ── Create a single card DOM element ────────────────────── */
-    function createCard(e, delayIndex) {
-      const idx   = entries.indexOf(e);
-      const title = e.title.length > 40 ? e.title.slice(0, 38) + '\u2026' : e.title;
-      const org   = e.org && e.org.length > 26 ? e.org.slice(0, 24) + '\u2026' : e.org;
-      const dates = e.end
-        ? `${e.start} \u2013 ${e.end}`
-        : `${e.start} \u2013 Present`;
-
-      const card = document.createElement('div');
-      card.className = `card ${e.color}`;
-      card.dataset.idx = idx;
-      card.style.animationDelay = `${delayIndex * 70}ms`;
-
-      card.innerHTML = `
-        <div class="card-title">${title}</div>
-        ${org ? `<div class="card-sub">${org}</div>` : ''}
-        <div class="card-dates">${dates}</div>
-
-        <div class="card-actions">
-          <div class="dots-wrapper">
-            <button class="icon-btn dots-toggle" title="Options">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
-                <circle cx="2"  cy="7" r="1.5"/>
-                <circle cx="7"  cy="7" r="1.5"/>
-                <circle cx="12" cy="7" r="1.5"/>
-              </svg>
-            </button>
-            <div class="dots-menu">
-              <button class="edit-btn" data-idx="${idx}">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"
-                     stroke="currentColor" stroke-width="1.4">
-                  <path d="M8.5 1.5l2 2L3 11H1V9L8.5 1.5z"/>
-                </svg>
-                Edit
-              </button>
-            </div>
-          </div>
-          <button class="icon-btn danger delete-btn" data-idx="${idx}" title="Delete">
-            <svg width="12" height="13" viewBox="0 0 12 13" fill="currentColor">
-              <path d="M.5 3h11M4 3V2a.5.5 0 0 1 .5-.5h3A.5.5 0 0 1 8 2v1
-                       M2 3l.55 7.3a1 1 0 0 0 1 .9h4.9a1 1 0 0 0 1-.9L10 3"/>
-            </svg>
-          </button>
-        </div>`;
-
-      /* Click card BODY → open detail modal */
-      card.addEventListener('click', () => openDetail(idx));
-
-      /* Action buttons stop propagation so they don't trigger the modal */
-      card.querySelectorAll('.dots-toggle').forEach(btn =>
-        btn.addEventListener('click', ev => {
-          ev.stopPropagation();
-          const menu    = btn.nextElementSibling;
-          const wasOpen = menu.classList.contains('open');
-          document.querySelectorAll('.dots-menu.open').forEach(m => m.classList.remove('open'));
-          if (!wasOpen) menu.classList.add('open');
-        })
-      );
-
-      card.querySelectorAll('.edit-btn').forEach(btn =>
-        btn.addEventListener('click', ev => {
-          ev.stopPropagation();
-          document.querySelectorAll('.dots-menu.open').forEach(m => m.classList.remove('open'));
-          openForm('edit', null, parseInt(btn.dataset.idx));
-        })
-      );
-
-      card.querySelectorAll('.delete-btn').forEach(btn =>
-        btn.addEventListener('click', ev => {
-          ev.stopPropagation();
-          deleteEntry(parseInt(btn.dataset.idx));
-        })
-      );
-
-      return card;
-    }
-
-
-    /* ── Detail modal ────────────────────────────────────────── */
-    function openDetail(idx) {
-      const e = entries[idx];
-      const dates = e.end
-        ? `${e.start} \u2013 ${e.end}`
-        : `${e.start} \u2013 Present`;
-
-      document.getElementById('modal-accent').style.background = hexFor(e.color);
-      document.getElementById('modal-type').textContent  = e.type === 'experience' ? '💼 Experience' : '🎓 Education';
-      document.getElementById('modal-title').textContent = e.title;
-      document.getElementById('modal-org').textContent   = e.org || '';
-      document.getElementById('modal-dates').textContent = dates;
-
-      const descEl = document.getElementById('modal-desc');
-      if (e.desc) {
-        descEl.textContent    = e.desc;
-        descEl.style.display  = 'block';
+  // IntersectionObserver — fire when section is >20% visible
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        setActive(entry.target.id);
       } else {
-        descEl.style.display = 'none';
+        entry.target.classList.remove('in-view');
       }
-
-      document.getElementById('detail-overlay').classList.add('active');
-    }
-
-    function closeDetail() {
-      document.getElementById('detail-overlay').classList.remove('active');
-    }
-
-    document.getElementById('detail-overlay').addEventListener('click', e => {
-      if (e.target === e.currentTarget) closeDetail();
     });
+  }, {
+    rootMargin: '-56px 0px -60% 0px',
+    threshold: 0
+  });
 
-
-    /* ── Delete ──────────────────────────────────────────────── */
-    function deleteEntry(idx) {
-      if (!confirm('Remove this entry from the timeline?')) return;
-      entries.splice(idx, 1);
-      renderTimeline();
-    }
-
-
-    /* ── Add / Edit form ─────────────────────────────────────── */
-    function openForm(mode, typeHint, editIdx) {
-      document.getElementById('form-mode').value     = mode;
-      document.getElementById('form-edit-idx').value = editIdx !== undefined ? editIdx : -1;
-
-      if (mode === 'edit' && editIdx >= 0) {
-        const e = entries[editIdx];
-        document.getElementById('form-heading').textContent = 'Edit Entry';
-        document.getElementById('submit-btn').textContent   = 'Save Changes';
-        document.getElementById('f-type').value  = e.type;
-        document.getElementById('f-title').value = e.title;
-        document.getElementById('f-org').value   = e.org   || '';
-        document.getElementById('f-start').value = e.start;
-        document.getElementById('f-end').value   = e.end   || '';
-        document.getElementById('f-side').value  = e.side;
-        document.getElementById('f-desc').value  = e.desc  || '';
-        pickColor(e.color);
-      } else {
-        const isEdu = typeHint === 'education';
-        document.getElementById('form-heading').textContent = isEdu ? 'Add Education' : 'Add Experience';
-        document.getElementById('submit-btn').textContent   = 'Add to Timeline';
-        document.getElementById('f-type').value  = typeHint || 'experience';
-        document.getElementById('f-title').value = '';
-        document.getElementById('f-org').value   = '';
-        document.getElementById('f-start').value = '';
-        document.getElementById('f-end').value   = '';
-        document.getElementById('f-side').value  = isEdu ? 'right' : 'left';
-        document.getElementById('f-desc').value  = '';
-        pickColor(isEdu ? 'red' : 'teal');
-      }
-
-      document.getElementById('form-overlay').classList.add('active');
-    }
-
-    function closeForm() {
-      document.getElementById('form-overlay').classList.remove('active');
-    }
-
-    document.getElementById('form-overlay').addEventListener('click', e => {
-      if (e.target === e.currentTarget) closeForm();
-    });
-
-    function submitForm() {
-      const title = document.getElementById('f-title').value.trim();
-      const start = parseInt(document.getElementById('f-start').value);
-      if (!title || isNaN(start)) {
-        alert('Please enter at least a title and start year.');
-        return;
-      }
-
-      const entry = {
-        type:  document.getElementById('f-type').value,
-        title,
-        org:   document.getElementById('f-org').value.trim(),
-        start,
-        end:   parseInt(document.getElementById('f-end').value) || null,
-        side:  document.getElementById('f-side').value,
-        color: document.getElementById('f-color').value,
-        desc:  document.getElementById('f-desc').value.trim(),
-      };
-
-      const mode    = document.getElementById('form-mode').value;
-      const editIdx = parseInt(document.getElementById('form-edit-idx').value);
-
-      if (mode === 'edit' && editIdx >= 0) entries[editIdx] = entry;
-      else entries.push(entry);
-
-      closeForm();
-      renderTimeline();
-    }
-
-
-    /* ── Initial render ──────────────────────────────────────── */
-    renderTimeline();
-
-  </script>
+  sections.forEach(s => observer.observe(s));
+</script>
 </body>
 </html>
